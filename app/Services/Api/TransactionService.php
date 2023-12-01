@@ -10,6 +10,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use App\Models\UserAddress;
 use Gloudemans\Shoppingcart\Facades\Cart;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use function App\Services\getSetting;
 
@@ -18,10 +19,14 @@ class TransactionService
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $transactions = Transaction::latest()->get();
+            $transactions = Transaction::when($request->headers->has('X-Mock-Status'), function ($q) use ($request) {
+                return $q->where('status', $request->headers->get('X-Mock-Status'));
+            })
+                ->latest()
+                ->get();
 
             return ['success' => true, 'data' => $transactions];
         } catch (\Exception $exception) {

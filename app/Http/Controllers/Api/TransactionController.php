@@ -23,9 +23,9 @@ class TransactionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $result = $this->transactionService->index();
+        $result = $this->transactionService->index($request);
 
         if ($result['success']) {
             return response()
